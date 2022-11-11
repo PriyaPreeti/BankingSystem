@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,14 +22,20 @@ public class CustomerPrincipalService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Customer customer = findUserByUsername(email);
+        Customer customer = getCustomer(email);
         return new CustomerPrincipal(customer);
 
     }
 
-    public Customer findUserByUsername(String email) {
+    public Customer getCustomer(String email) {
 
         return customerRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("user not found"));
+    }
+
+    public void saveCustomer(String name, String email, String mobileNumber, String identityCardNumber, String address, String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Customer customer = new Customer(name, email, mobileNumber, identityCardNumber, address, encoder.encode(password));
+        customerRepository.save(customer);
     }
 
 
