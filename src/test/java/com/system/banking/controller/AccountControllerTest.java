@@ -6,6 +6,7 @@ import com.system.banking.model.Customer;
 import com.system.banking.repo.AccountRepository;
 import com.system.banking.repo.CustomerRepository;
 import com.system.banking.service.AccountService;
+import com.system.banking.service.CustomerPrincipalService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,8 @@ public class AccountControllerTest {
 
     AccountService accountService;
 
+    CustomerPrincipalService customerPrincipalService;
+
 
     @BeforeEach
     public void before() {
@@ -50,6 +53,7 @@ public class AccountControllerTest {
     void setUp() {
 
         accountService = mock(AccountService.class);
+        customerPrincipalService=mock(CustomerPrincipalService.class);
     }
 
 
@@ -59,7 +63,7 @@ public class AccountControllerTest {
         AccountController accountController = new AccountController(accountService);
         Customer customer = new Customer(signupRequest.getName(), signupRequest.getEmail(), signupRequest.getMobileNumber(), signupRequest.getIdentityCard(), signupRequest.getAddress(), signupRequest.getPassword()
         );
-        when(accountService.getCustomer(signupRequest.getEmail())).thenReturn(customer);
+        when(customerPrincipalService.getCustomer(signupRequest.getEmail())).thenReturn(customer);
 
         accountController.save(signupRequest);
 
