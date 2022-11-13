@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/signup").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/transaction").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
