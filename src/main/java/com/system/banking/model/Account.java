@@ -16,7 +16,7 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long accountNumber;
+    private long id;
     @Column(nullable = false)
     private BigDecimal balance;
 
@@ -36,12 +36,12 @@ public class Account {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return accountNumber == account.accountNumber;
+        return id == account.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountNumber);
+        return Objects.hash(id);
     }
 
     public Account(BigDecimal balance, String accountStatus, Customer customer, Date creationDate) {

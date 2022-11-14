@@ -24,7 +24,7 @@ public class AccountService {
 
     public void createAccount(String name, String email, String mobileNumber, String identityCardNumber, String address, String password) throws EmailIdAlreadyRegisteredException {
         CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
-        if(customerPrincipalService.getCustomer(email)!=null) throw new EmailIdAlreadyRegisteredException();
+        //   if(customerPrincipalService.getCustomer(email).) throw new EmailIdAlreadyRegisteredException();
         customerPrincipalService.saveCustomer(name, email, mobileNumber, identityCardNumber, address, password);
         Customer savedCustomer = customerPrincipalService.getCustomer(email);
         Account account = new Account(new BigDecimal(0), "ACTIVE", savedCustomer, new Date());
@@ -33,10 +33,12 @@ public class AccountService {
     }
 
     public Account getAccount(Long accountNumber) throws AccountNumberNotFoundException {
-        Account account = accountRepository.findByAccountNumber(accountNumber);
-        if (account == null) throw new AccountNumberNotFoundException();
-        return account;
+        return accountRepository.findById(accountNumber).orElseThrow(() -> new AccountNumberNotFoundException());
 
+    }
+
+    public Account findAccountByCustomer(Long customerId) {
+        return accountRepository.findByCustomerId(customerId);
     }
 
     public Map<String, Object> getSummary(String email) {
@@ -46,7 +48,7 @@ public class AccountService {
         String name = customer.getName();
         Account account = accountRepository.findByCustomerId(customer.getId());
         summary.put("Name", name);
-        summary.put("Account Number", account.getAccountNumber());
+        summary.put("Account Number", account.getId());
         summary.put("Balance", account.getBalance());
         return summary;
 

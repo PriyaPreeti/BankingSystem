@@ -85,5 +85,4 @@ public class AccountControllerTest {
 
         verify(accountService).getSummary(customer.getEmail());
     }
-
 }

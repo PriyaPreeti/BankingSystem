@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -24,13 +25,17 @@ public class Transaction {
     private BigDecimal amount;
 
     @OneToOne
-    @JoinColumn(name = "account_number")
+    @JoinColumn(name = "account_id")
     private Account account;
 
-    public Transaction(String transactionType, BigDecimal amount, Account account) {
+    @Column(nullable = false)
+    private Date transactionDate;
+
+    public Transaction(String transactionType, BigDecimal amount, Account account,Date transactionDate) {
         this.transactionType = transactionType;
         this.amount = amount;
         this.account = account;
+        this.transactionDate=transactionDate;
     }
 
     @Override

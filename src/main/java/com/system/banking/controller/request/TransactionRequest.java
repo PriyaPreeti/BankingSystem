@@ -1,5 +1,6 @@
 package com.system.banking.controller.request;
 
+import com.system.banking.model.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,6 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 public class TransactionRequest {
-    private String transactionType;
+    private TransactionType transactionType;
     private BigDecimal amount;
-    private Long accountNumber;
 }

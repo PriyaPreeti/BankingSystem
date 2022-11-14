@@ -8,7 +8,6 @@ import com.system.banking.repo.AccountRepository;
 import com.system.banking.repo.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -26,15 +25,19 @@ public class AccountServiceTest {
 
     private AccountRepository accountRepository;
 
+
+    private CustomerPrincipalService customerPrincipalService;
+
     @BeforeEach
     public void setup() {
         customerRepository = mock(CustomerRepository.class);
         accountRepository = mock(AccountRepository.class);
+        customerPrincipalService = mock(CustomerPrincipalService.class);
     }
 
     @Test
     void shouldBeAbleToGenerateAccountDetailsWhenCustomerDetailsAreStored() throws EmailIdAlreadyRegisteredException {
-        Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
+        Customer customer = new Customer("Preeti", "Priya1123@example.com", "1111111111", "123456789", "xyz", "password");
         when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
         Account account = new Account(new BigDecimal("0.0"), "ACTIVE", customer, new Date());
         AccountService accountService = new AccountService(accountRepository, customerRepository);
@@ -45,26 +48,15 @@ public class AccountServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenEmailIsAlreadyRegistered() {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Customer customer = new Customer("preeti", "Priya@gmail.com", "1234", "12345667", "abc", encoder.encode("password"));
-        when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
-        AccountService accountService = new AccountService(accountRepository, customerRepository);
-
-        assertThrows(EmailIdAlreadyRegisteredException.class, () -> accountService.createAccount(customer.getName(),customer.getEmail(),customer.getMobileNumber(),customer.getIdentityCard(),customer.getAddress(),customer.getPassword()));
-
-    }
-
-    @Test
     void shouldBeAbleToGetAccountWhenAccountNumberIsProvided() throws AccountNumberNotFoundException, EmailIdAlreadyRegisteredException {
         Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
         when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
         Account account = new Account(new BigDecimal("0.0"), "ACTIVE", customer, new Date());
         AccountService accountService = new AccountService(accountRepository, customerRepository);
-        when(accountRepository.findByAccountNumber(account.getAccountNumber())).thenReturn(account);
+        when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
         accountService.createAccount(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword());
 
-        Account fetchedAccount = accountService.getAccount(account.getAccountNumber());
+        Account fetchedAccount = accountService.getAccount(account.getId());
 
         assertEquals(account, fetchedAccount);
     }
@@ -85,7 +77,7 @@ public class AccountServiceTest {
         when(accountRepository.findByCustomerId(customer.getId())).thenReturn(account);
         Map<String, Object> expectedSummary = new HashMap<>();
         expectedSummary.put("Name", customer.getName());
-        expectedSummary.put("Account Number", account.getAccountNumber());
+        expectedSummary.put("Account Number", account.getId());
         expectedSummary.put("Balance", account.getBalance());
         AccountService accountService = new AccountService(accountRepository, customerRepository);
 
