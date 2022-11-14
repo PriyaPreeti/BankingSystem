@@ -70,6 +70,24 @@ public class AccountControllerIntegrationTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenExistingEmailIdIsProvided() throws Exception {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Customer customer = new Customer("preeti", "Priya@gmail.com", "1234", "12345667", "abc", encoder.encode("password"));
+        Customer savedCustomer = customerRepository.save(customer);
+        Account account = new Account(new BigDecimal(0), "ACTIVE", savedCustomer, new Date());
+        accountRepository.save(account);
+        SignUpRequest signupRequest = new SignUpRequest("Preeti", "Priya@gmail.com", "9999999999", "011", "bihar", "preeti@123");
+        String requestJson = new ObjectMapper().writeValueAsString(signupRequest);
+
+        mockMvc.perform(post("/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+
+
+    }
+
+    @Test
     void shouldBeAbleToGetAccountSummary() throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Customer customer = new Customer("preeti", "Priya@gmail.com", "1234", "12345667", "abc", encoder.encode("password"));

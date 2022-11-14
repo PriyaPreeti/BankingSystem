@@ -1,6 +1,7 @@
 package com.system.banking.controller;
 
 import com.system.banking.controller.request.SignUpRequest;
+import com.system.banking.exceptions.EmailIdAlreadyRegisteredException;
 import com.system.banking.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public class AccountController {
 
     @PostMapping("/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void save(@RequestBody SignUpRequest signupRequest) throws IOException {
+    public void save(@RequestBody SignUpRequest signupRequest) throws IOException, EmailIdAlreadyRegisteredException {
         accountService.createAccount(signupRequest.getName(), signupRequest.getEmail(), signupRequest.getMobileNumber(), signupRequest.getIdentityCard(), signupRequest.getAddress(), signupRequest.getPassword());
     }
 

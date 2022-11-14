@@ -1,6 +1,7 @@
 package com.system.banking.service;
 
 import com.system.banking.exceptions.AccountNumberNotFoundException;
+import com.system.banking.exceptions.EmailIdAlreadyRegisteredException;
 import com.system.banking.model.Account;
 import com.system.banking.model.Customer;
 import com.system.banking.repo.AccountRepository;
@@ -21,8 +22,9 @@ public class AccountService {
 
     private CustomerRepository customerRepository;
 
-    public void createAccount(String name, String email, String mobileNumber, String identityCardNumber, String address, String password) {
+    public void createAccount(String name, String email, String mobileNumber, String identityCardNumber, String address, String password) throws EmailIdAlreadyRegisteredException {
         CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
+        if(customerPrincipalService.getCustomer(email)!=null) throw new EmailIdAlreadyRegisteredException();
         customerPrincipalService.saveCustomer(name, email, mobileNumber, identityCardNumber, address, password);
         Customer savedCustomer = customerPrincipalService.getCustomer(email);
         Account account = new Account(new BigDecimal(0), "ACTIVE", savedCustomer, new Date());

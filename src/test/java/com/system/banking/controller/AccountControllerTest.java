@@ -2,6 +2,7 @@ package com.system.banking.controller;
 
 import com.system.banking.BankingApplication;
 import com.system.banking.controller.request.SignUpRequest;
+import com.system.banking.exceptions.EmailIdAlreadyRegisteredException;
 import com.system.banking.model.Customer;
 import com.system.banking.repo.AccountRepository;
 import com.system.banking.repo.CustomerRepository;
@@ -63,7 +64,7 @@ public class AccountControllerTest {
 
 
     @Test
-    void shouldBeAbleToCreateAccountSuccessfully() throws IOException {
+    void shouldBeAbleToCreateAccountSuccessfully() throws IOException, EmailIdAlreadyRegisteredException {
         SignUpRequest signupRequest = new SignUpRequest("Preeti", "Priya1@example.com", "9999999999", "011", "bihar", "preeti@123");
         AccountController accountController = new AccountController(accountService);
         Customer customer = new Customer(signupRequest.getName(), signupRequest.getEmail(), signupRequest.getMobileNumber(), signupRequest.getIdentityCard(), signupRequest.getAddress(), signupRequest.getPassword()
