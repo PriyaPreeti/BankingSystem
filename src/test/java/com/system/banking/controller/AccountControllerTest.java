@@ -10,12 +10,14 @@ import com.system.banking.service.CustomerPrincipalService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import static org.mockito.Mockito.*;
 
@@ -29,6 +31,9 @@ public class AccountControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Mock
+    Principal principal;
 
     AccountService accountService;
 
@@ -53,7 +58,7 @@ public class AccountControllerTest {
     void setUp() {
 
         accountService = mock(AccountService.class);
-        customerPrincipalService=mock(CustomerPrincipalService.class);
+        customerPrincipalService = mock(CustomerPrincipalService.class);
     }
 
 
@@ -70,5 +75,14 @@ public class AccountControllerTest {
         verify(accountService).createAccount(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword());
     }
 
+    @Test
+    void shouldBeAbleToGetSummaryOfParticularCustomer() {
+        Customer customer = new Customer("Preeti", "Preeti@gmail.com", "1234567890", "1234", "xyz", "password");
+        AccountController accountController = new AccountController(accountService);
+        when(principal.getName()).thenReturn(customer.getEmail());
+        accountController.getSummary(principal);
+
+        verify(accountService).getSummary(customer.getEmail());
+    }
 
 }

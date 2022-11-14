@@ -61,7 +61,7 @@ public class TransactionControllerIntegrationTest {
     }
 
     @Test
-    void shouldBeAbleToCreditMoney() throws Exception {
+    void shouldBeAbleToInvokeTransactionApiWhenCustomerWantCreditOrDebitMoney() throws Exception {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Customer customer = new Customer("preeti", "Priya@gmail.com", "1234", "12345667", "abc", encoder.encode("password"));
         Customer savedCustomer = customerRepository.save(customer);
@@ -74,12 +74,11 @@ public class TransactionControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isCreated());
-//               .andExpect(jsonPath("$.id").exists());
-//                .andExpect(content().json("{" +
-//                        "\"\":\"Customer 1\"," +
-//                        "\"showDate\":\"2020-01-01\"," +
-//                        "\"startTime\":\"09:30:00\"," +
-//                        "\"amountPaid\":499.98," +
-//                        "\"noOfSeats\":2}"));
+    }
+
+    @Test
+    public void shouldThrowErrorWhenAccountNumberIsNotCorrect() throws Exception {
+        mockMvc.perform(post("/transaction"))
+                .andExpect(status().isBadRequest());
     }
 }

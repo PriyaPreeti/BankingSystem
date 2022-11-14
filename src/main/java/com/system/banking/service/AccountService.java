@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -30,8 +32,21 @@ public class AccountService {
 
     public Account getAccount(Long accountNumber) throws AccountNumberNotFoundException {
         Account account = accountRepository.findByAccountNumber(accountNumber);
-        if(account==null) throw new AccountNumberNotFoundException();
+        if (account == null) throw new AccountNumberNotFoundException();
         return account;
+
+    }
+
+    public Map<String, Object> getSummary(String email) {
+        Map<String, Object> summary = new HashMap<>();
+        CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
+        Customer customer = customerPrincipalService.getCustomer(email);
+        String name = customer.getName();
+        Account account = accountRepository.findByCustomerId(customer.getId());
+        summary.put("Name", name);
+        summary.put("Account Number", account.getAccountNumber());
+        summary.put("Balance", account.getBalance());
+        return summary;
 
     }
 

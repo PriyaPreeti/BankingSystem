@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -56,9 +58,26 @@ public class AccountServiceTest {
 
     @Test
     void shouldBeAbleToThrowExceptionWhenAccountNumberDoesNotExist() {
-        Long accountNumber=8L;
+        Long accountNumber = 8L;
         AccountService accountService = new AccountService(accountRepository, customerRepository);
 
         assertThrows(AccountNumberNotFoundException.class, () -> accountService.getAccount(accountNumber));
+    }
+
+    @Test
+    void shouldBeAbleToGetSummaryOfAccount() {
+        Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
+        when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
+        Account account = new Account(new BigDecimal(0), "ACTIVE", customer, new Date());
+        when(accountRepository.findByCustomerId(customer.getId())).thenReturn(account);
+        Map<String, Object> expectedSummary = new HashMap<>();
+        expectedSummary.put("Name", customer.getName());
+        expectedSummary.put("Account Number", account.getAccountNumber());
+        expectedSummary.put("Balance", account.getBalance());
+        AccountService accountService = new AccountService(accountRepository, customerRepository);
+
+        Map<String, Object> actualSummary = accountService.getSummary(customer.getEmail());
+
+        assertEquals(expectedSummary, actualSummary);
     }
 }
