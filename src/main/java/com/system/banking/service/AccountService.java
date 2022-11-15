@@ -22,9 +22,9 @@ public class AccountService {
 
     private CustomerRepository customerRepository;
 
+    private CustomerPrincipalService customerPrincipalService;
+
     public void createAccount(String name, String email, String mobileNumber, String identityCardNumber, String address, String password) throws EmailIdAlreadyRegisteredException {
-        CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
-        //   if(customerPrincipalService.getCustomer(email).) throw new EmailIdAlreadyRegisteredException();
         customerPrincipalService.saveCustomer(name, email, mobileNumber, identityCardNumber, address, password);
         Customer savedCustomer = customerPrincipalService.getCustomer(email);
         Account account = new Account(new BigDecimal(0), "ACTIVE", savedCustomer, new Date());

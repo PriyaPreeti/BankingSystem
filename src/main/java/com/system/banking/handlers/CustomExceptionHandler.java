@@ -15,13 +15,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AccountNumberNotFoundException.class)
     public final ResponseEntity<ErrorResponse> handleException(AccountNumberNotFoundException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("This username already exists", singletonList(ex.getMessage()));
+        ErrorResponse errorResponse = new ErrorResponse("Try using correct account number", singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailIdAlreadyRegisteredException.class)
     public final ResponseEntity<ErrorResponse> handleException(EmailIdAlreadyRegisteredException ex) {
-        ErrorResponse errorResponse = new ErrorResponse("Try using correct Account Number", singletonList(ex.getMessage()));
+        ErrorResponse errorResponse = new ErrorResponse("This username already exist", singletonList(ex.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

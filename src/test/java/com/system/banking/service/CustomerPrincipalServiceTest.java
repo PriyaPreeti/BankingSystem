@@ -1,5 +1,6 @@
 package com.system.banking.service;
 
+import com.system.banking.exceptions.EmailIdAlreadyRegisteredException;
 import com.system.banking.model.Customer;
 import com.system.banking.repo.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class CustomerPrincipalServiceTest {
@@ -20,7 +22,7 @@ public class CustomerPrincipalServiceTest {
     }
 
     @Test
-    void shouldBeAbleToSaveCustomer() {
+    void shouldBeAbleToSaveCustomer() throws EmailIdAlreadyRegisteredException {
         Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
         CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
 
@@ -30,7 +32,18 @@ public class CustomerPrincipalServiceTest {
     }
 
     @Test
-    void shouldBeAbleToGetCustomerWhenEmailIsProvided() {
+    void shouldThrowExceptionWhenEmailIdAlreadyExists() throws EmailIdAlreadyRegisteredException {
+        Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
+        CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
+        customerPrincipalService.saveCustomer(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword());
+        when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
+
+        assertThrows(EmailIdAlreadyRegisteredException.class, () -> customerPrincipalService.saveCustomer(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword()));
+
+    }
+
+    @Test
+    void shouldBeAbleToGetCustomerWhenEmailIsProvided() throws EmailIdAlreadyRegisteredException {
         Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
         CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
         customerPrincipalService.saveCustomer(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword());

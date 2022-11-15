@@ -38,9 +38,9 @@ public class AccountServiceTest {
     @Test
     void shouldBeAbleToGenerateAccountDetailsWhenCustomerDetailsAreStored() throws EmailIdAlreadyRegisteredException {
         Customer customer = new Customer("Preeti", "Priya1123@example.com", "1111111111", "123456789", "xyz", "password");
-        when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
+        when(customerPrincipalService.getCustomer(customer.getEmail())).thenReturn(customer);
         Account account = new Account(new BigDecimal("0.0"), "ACTIVE", customer, new Date());
-        AccountService accountService = new AccountService(accountRepository, customerRepository);
+        AccountService accountService = new AccountService(accountRepository, customerRepository, customerPrincipalService);
 
         accountService.createAccount(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword());
 
@@ -49,10 +49,9 @@ public class AccountServiceTest {
 
     @Test
     void shouldBeAbleToGetAccountWhenAccountNumberIsProvided() throws AccountNumberNotFoundException, EmailIdAlreadyRegisteredException {
-        Customer customer = new Customer("Preeti", "Priya@example.com", "1111111111", "123456789", "xyz", "password");
-        when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
+        Customer customer = new Customer("Preeti", "Priya11@example.com", "1111111111", "123456789", "xyz", "password");
         Account account = new Account(new BigDecimal("0.0"), "ACTIVE", customer, new Date());
-        AccountService accountService = new AccountService(accountRepository, customerRepository);
+        AccountService accountService = new AccountService(accountRepository, customerRepository, customerPrincipalService);
         when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
         accountService.createAccount(customer.getName(), customer.getEmail(), customer.getMobileNumber(), customer.getIdentityCard(), customer.getAddress(), customer.getPassword());
 
@@ -64,7 +63,7 @@ public class AccountServiceTest {
     @Test
     void shouldBeAbleToThrowExceptionWhenAccountNumberDoesNotExist() {
         Long accountNumber = 8L;
-        AccountService accountService = new AccountService(accountRepository, customerRepository);
+        AccountService accountService = new AccountService(accountRepository, customerRepository, customerPrincipalService);
 
         assertThrows(AccountNumberNotFoundException.class, () -> accountService.getAccount(accountNumber));
     }
@@ -79,7 +78,7 @@ public class AccountServiceTest {
         expectedSummary.put("Name", customer.getName());
         expectedSummary.put("Account Number", account.getId());
         expectedSummary.put("Balance", account.getBalance());
-        AccountService accountService = new AccountService(accountRepository, customerRepository);
+        AccountService accountService = new AccountService(accountRepository, customerRepository, customerPrincipalService);
 
         Map<String, Object> actualSummary = accountService.getSummary(customer.getEmail());
 

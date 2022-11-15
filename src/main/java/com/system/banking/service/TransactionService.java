@@ -6,8 +6,6 @@ import com.system.banking.model.Account;
 import com.system.banking.model.Customer;
 import com.system.banking.model.Transaction;
 import com.system.banking.model.TransactionType;
-import com.system.banking.repo.AccountRepository;
-import com.system.banking.repo.CustomerRepository;
 import com.system.banking.repo.TransactionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,16 +22,13 @@ public class TransactionService {
 
     private TransactionRepository transactionRepository;
 
-    private AccountRepository accountRepository;
-
-    private CustomerRepository customerRepository;
-
     private AccountService accountService;
+
+    private CustomerPrincipalService customerPrincipalService;
 
 
     @Transactional
     public void performTransaction(String userName, TransactionType transactionType, BigDecimal amount) {
-        CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
         Customer customer = customerPrincipalService.getCustomer(userName);
         Account fetchedAccount = accountService.findAccountByCustomer(customer.getId());
         Transaction transaction = new Transaction(transactionType.toString(), amount, fetchedAccount, new Date());
@@ -43,7 +38,6 @@ public class TransactionService {
     }
 
     public TransactionStatementResponse getStatement(String email) {
-        CustomerPrincipalService customerPrincipalService = new CustomerPrincipalService(customerRepository);
         Customer customer = customerPrincipalService.getCustomer(email);
         Account account = accountService.findAccountByCustomer(customer.getId());
         List<TransactionResponse> transactionResponse = new ArrayList<>();
